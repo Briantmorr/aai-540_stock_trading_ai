@@ -4,6 +4,8 @@ from sagemaker.workflow.pipeline import Pipeline
 import boto3
 from sagemaker.workflow.function_step import step
 from sagemaker import get_execution_role, Session
+import logging
+
 
 sagemaker_session = Session()
 role = get_execution_role()
@@ -13,28 +15,33 @@ session = PipelineSession(boto_session=sagemaker_session.boto_session, default_b
 pipeline_name = 'stock-pipeline'
 
 
-@step
+@step(
+    instance_type="ml.m5.large"
+)
 def fetch():
     # fetch data
     ticker = "SPY"
-    print('hello world')
+    logging.info('executing fetch step')
     return ticker
 
-@step
+
+@step(
+    instance_type="ml.m5.large"
+)
 def preprocess(data):
     # fetch data
     ticker = "SPY"
-    print(f"Data should be output of fetch step: {data}")
+    logging.info(f'data should be output of fetch function: {data}')
     return ticker
 
-step1_result = fetch()
-step2_result = preprocess(step1_result)
+
+fetch_result = fetch()
+preprocess_result = preprocess(fetch_result)
 
 pipeline = Pipeline(
     name=pipeline_name,
-    steps=[fetch, preprocess],
+    steps=[fetch_result, preprocess_result],
     sagemaker_session=session,
 )
 
-
-pipeline.create(role)
+pipeline.upsert(role)
