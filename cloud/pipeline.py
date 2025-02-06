@@ -5,11 +5,6 @@ import boto3
 from sagemaker.workflow.function_step import step
 from sagemaker import get_execution_role, Session
 import logging
-import yfinance as yf
-import pandas as pd
-from datetime import datetime, timedelta
-from io import StringIO
-
 
 sagemaker_session = Session()
 role = get_execution_role()
@@ -21,14 +16,14 @@ default_ticker = "SPY"
 years_of_data_to_fetch = 10
 
 @step(
-    instance_type="ml.m5.large"
+    instance_type="ml.t3.medium",
+    pip_requirements=["yfinance", "pandas"]
 )
 def fetch(ticker=default_ticker, years=years_of_data_to_fetch):
     import yfinance as yf
     import pandas as pd
     from datetime import datetime, timedelta
     import logging
-    from sagemaker import Session
     
     # Setup S3 bucket
     sagemaker_session = Session()
@@ -70,13 +65,12 @@ def fetch(ticker=default_ticker, years=years_of_data_to_fetch):
 
 
 @step(
-    instance_type="ml.m5.large"
+    instance_type="ml.t3.medium",
+    pip_requirements=["pandas"]
 )
 def preprocess(data_path):
     import pandas as pd
-    import boto3
     import logging
-    from sagemaker import Session
     from io import StringIO
     
     try:
@@ -141,7 +135,7 @@ def train_and_eval(data):
     return "stub_train"
 
 @step(
-    instance_type="ml.m5.large"
+    instance_type="ml.t3.medium"
 )
 def deploy(data):
     # if latest_model is different than current
