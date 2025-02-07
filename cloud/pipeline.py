@@ -16,8 +16,8 @@ default_ticker = "SPY"
 years_of_data_to_fetch = 10
 
 @step(
-    instance_type="ml.t3.medium",
-    pip_requirements=["yfinance", "pandas"]
+    instance_type="ml.m5.large",
+    dependencies="requirements.txt"
 )
 def fetch(ticker=default_ticker, years=years_of_data_to_fetch):
     import yfinance as yf
@@ -65,8 +65,8 @@ def fetch(ticker=default_ticker, years=years_of_data_to_fetch):
 
 
 @step(
-    instance_type="ml.t3.medium",
-    pip_requirements=["pandas"]
+    instance_type="ml.m5.large",
+    dependencies="requirements.txt"
 )
 def preprocess(data_path):
     import pandas as pd
