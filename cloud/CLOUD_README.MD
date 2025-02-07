@@ -5,8 +5,8 @@
 3. Open a terminal
 4. Clone the repository
 5. run ``` pip install yfinance pandas```
-6. run the initial_setup notebook to create the s3 bucket
-7. run ```python3 pipeline.py```
+6. run the initial setup notebook to create the s3 bucket
+7. run the pipeline.ipynb notebook
 8. navigate to sagemakerUI -> Pipelines -> stock-pipeline and manually execute
 9. verify execution by visiting cloudwatch logs > /aws/sagemaker/TrainingJobs and search for logger.info statements
 

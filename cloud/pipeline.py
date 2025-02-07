@@ -13,7 +13,7 @@ default_bucket = sagemaker_session.default_bucket()
 session = PipelineSession(boto_session=sagemaker_session.boto_session, default_bucket=default_bucket)
 pipeline_name = 'stock-pipeline'
 default_ticker = "SPY"
-years_of_data_to_fetch = 10
+years_of_data_to_fetch = 1
 
 @step(
     instance_type="ml.m5.large",
@@ -92,8 +92,8 @@ def preprocess(data_path):
         # Preprocess steps
         # 1. Reset index and ensure date is properly formatted
         raw_data.reset_index(inplace=True)
-        raw_data['Date'] = pd.to_datetime(raw_data['Date']).dt.strftime('%Y-%m-%d')
-        
+        raw_data['Date'] = pd.to_datetime(raw_data['Date'], utc=True).dt.strftime('%Y-%m-%d')
+
         # 2. Select only relevant columns
         features = ['Date', 'Open', 'High', 'Low', 'Close']
         processed_data = raw_data[features]
@@ -135,7 +135,7 @@ def train_and_eval(data):
     return "stub_train"
 
 @step(
-    instance_type="ml.t3.medium"
+    instance_type="ml.m5.large"
 )
 def deploy(data):
     # if latest_model is different than current
