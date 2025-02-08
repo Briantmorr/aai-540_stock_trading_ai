@@ -1,4 +1,3 @@
-import boto3
 from sagemaker.workflow.function_step import step
 
 @step(
@@ -6,6 +5,13 @@ from sagemaker.workflow.function_step import step
     dependencies="requirements.txt"
 )
 def preprocess(data_path):
+    import yfinance as yf
+    import pandas as pd
+    from datetime import datetime, timedelta
+    import logging
+    from sagemaker import Session
+    from io import StringIO
+    import boto3
     """
     Reads raw CSV data from S3, preprocesses it by resetting the index,
     formatting the date, selecting relevant features, sorting the data,

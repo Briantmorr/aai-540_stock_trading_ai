@@ -1,6 +1,3 @@
-import boto3
-import logging
-from datetime import datetime, timedelta
 from sagemaker.workflow.function_step import step
 
 @step(
@@ -12,10 +9,13 @@ def fetch(ticker, years):
     Fetches historical stock data for the given ticker over the specified number of years,
     saves the raw data to S3, and returns the S3 path.
     """
-    # Import libraries that are only needed at runtime.
     import yfinance as yf
     import pandas as pd
-    
+    from datetime import datetime, timedelta
+    import logging
+    from sagemaker import Session
+    import boto3
+
     sagemaker_session = Session()
     default_bucket = sagemaker_session.default_bucket()
     
