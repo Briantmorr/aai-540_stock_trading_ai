@@ -1,0 +1,10 @@
+SchemaVersion: '1.0'
+SageMaker:
+  PythonSDK:
+    Modules:
+      RemoteFunction:
+        Dependencies: ./requirements.txt
+        IncludeLocalWorkDir: true
+        CustomFileFilter:
+          IgnoreNamePatterns:
+          - "*.ipynb" # all notebook files

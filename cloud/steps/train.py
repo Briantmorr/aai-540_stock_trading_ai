@@ -1,4 +1,4 @@
-# train.py
+# steps/train.py
 from sagemaker.workflow.function_step import step
 from steps.utils import get_default_bucket, upload_to_s3, setup_logging
 import boto3
@@ -11,6 +11,17 @@ from sklearn.preprocessing import MinMaxScaler
 from safetensors.torch import save_file
 from datetime import datetime
 import os
+import logging
+from sagemaker import Session
+
+
+def download_from_s3(s3_path):
+    """Download a file from S3 and return the local path."""
+    s3_client = boto3.client('s3')
+    bucket, key = s3_path.replace("s3://", "").split("/", 1)
+    local_file = f"/tmp/{os.path.basename(key)}"
+    s3_client.download_file(bucket, key, local_file)
+    return local_file
 
 
 class LSTMTimeSeries(nn.Module):
@@ -21,6 +32,7 @@ class LSTMTimeSeries(nn.Module):
         self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
         self.fc = nn.Linear(hidden_size, output_size)
 
+    
     def forward(self, x):
         h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(x.device)
         c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(x.device)
@@ -40,15 +52,6 @@ class SPYDataset(Dataset):
 
     def __getitem__(self, idx):
         return self.X[idx], self.y[idx]
-
-
-def download_from_s3(s3_path):
-    """Download a file from S3 and return the local path."""
-    s3_client = boto3.client('s3')
-    bucket, key = s3_path.replace("s3://", "").split("/", 1)
-    local_file = f"/tmp/{os.path.basename(key)}"
-    s3_client.download_file(bucket, key, local_file)
-    return local_file
 
 
 def create_sequences(data, window_size=30, target_step=1):
@@ -91,8 +94,11 @@ def evaluate_model(model, test_loader, device):
             actuals.append(y_batch.numpy().reshape(-1, 1))
     return np.vstack(predictions), np.vstack(actuals)
 
-
-@step(instance_type="ml.m5.large", dependencies="requirements.txt")
+    
+# @step(
+#     instance_type="ml.m5.large",
+#     dependencies="requirements.txt"
+# )
 def train(data_s3_path):
     """
     Trains an LSTM model on preprocessed stock data, evaluates it, saves the model to S3,
@@ -153,7 +159,6 @@ def train(data_s3_path):
         logger.info(f"Model saved to {model_s3_path}")
 
         return model_s3_path, rmse
-
     except Exception as e:
         logger.error(f"Error during training: {e}")
         raise e

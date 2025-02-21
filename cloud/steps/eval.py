@@ -1,9 +1,12 @@
+# steps/eval.py
 from sagemaker.workflow.function_step import step
 from steps.utils import get_default_bucket, setup_logging
 import boto3
 import torch
-from safetensors.torch import load  
+from safetensors.torch import load
 import io
+import logging
+from sagemaker import Session
 
 
 class LSTMTimeSeries(torch.nn.Module):
@@ -44,7 +47,10 @@ def get_rmse_from_filename(s3_path):
         return None
 
 
-@step(instance_type="ml.m5.large", dependencies="requirements.txt")
+# @step(
+#     instance_type="ml.m5.large",
+#     dependencies="requirements.txt"
+# )
 def eval(train_output):
     """
     Evaluates the trained model against the current deployed model by comparing RMSE.
@@ -88,7 +94,6 @@ def eval(train_output):
         logger.info(f"New RMSE: {new_rmse}, Current RMSE: {current_rmse}, Deploy: {deploy_flag}")
 
         return deploy_flag, model_s3_path
-
     except Exception as e:
         logger.error(f"Error during evaluation: {e}")
         raise e

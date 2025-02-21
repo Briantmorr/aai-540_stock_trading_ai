@@ -1,9 +1,11 @@
-# preprocess.py
+# steps/preprocess.py
 from sagemaker.workflow.function_step import step
 from steps.utils import get_default_bucket, upload_to_s3, setup_logging
 import pandas as pd
 from io import StringIO
 import boto3
+import logging
+from sagemaker import Session
 
 
 def preprocess_data(raw_data):
@@ -27,7 +29,10 @@ def preprocess_data(raw_data):
     return processed_data
 
 
-@step(instance_type="ml.m5.large", dependencies="requirements.txt")
+# @step(
+#     instance_type="ml.m5.large",
+#     dependencies="requirements.txt"
+# )
 def preprocess(data_path):
     """
     Reads raw CSV data directly from S3, preprocesses it, saves the processed CSV back to S3,
@@ -59,7 +64,6 @@ def preprocess(data_path):
         logger.info(f"Preprocessed data saved to {processed_data_path}")
 
         return processed_data_path
-
     except Exception as e:
         logger.error(f"Error during preprocessing: {e}")
         raise e
