@@ -10,38 +10,32 @@ from sagemaker import Session
 
 def preprocess_data(raw_data):
     """
-    Preprocesses raw stock data by resetting the index, formatting dates,
-    selecting relevant features, and sorting by date.
+    Preprocesses raw stock data by resetting the index, sorting by date,
+    and selecting only numeric features (Open, High, Low, Close).
     Args:
         raw_data (pd.DataFrame): Raw stock data from S3.
     Returns:
-        pd.DataFrame: Processed data with selected features and sorted dates.
+        pd.DataFrame: Processed data with numeric features sorted by date.
     """
-    # Reset index and format 'Date' column
+    # Reset index and sort by 'Date'
     raw_data.reset_index(inplace=True)
-    raw_data['Date'] = pd.to_datetime(raw_data['Date'], utc=True).dt.strftime('%Y-%m-%d')
+    raw_data['Date'] = pd.to_datetime(raw_data['Date'], utc=True)
+    raw_data = raw_data.sort_values('Date')
 
-    features = ['Date', 'Open', 'High', 'Low', 'Close']
+    # Select only numeric features, as per notebook's download_data
+    features = ['Open', 'High', 'Low', 'Close']
     processed_data = raw_data[features]
 
-    processed_data.sort_values('Date', inplace=True)
+    # Reset index to match notebook's final data format
     processed_data.reset_index(drop=True, inplace=True)
     return processed_data
 
 
 # @step(
 #     instance_type="ml.m5.large",
-#     dependencies="requirements.txt"
+#     dependencies="cloud/"
 # )
 def preprocess(data_path):
-    """
-    Reads raw CSV data directly from S3, preprocesses it, saves the processed CSV back to S3,
-    and returns the S3 path to the processed data.
-    Args:
-        data_path (str): S3 path to the raw CSV file (e.g., 's3://bucket/raw/SPY_raw_data.csv').
-    Returns:
-        str: S3 path to the processed CSV file (e.g., 's3://bucket/processed/SPY_raw_data.csv').
-    """
     logger = setup_logging()
     logger.info(f"Starting preprocessing with data from {data_path}")
 
@@ -56,7 +50,6 @@ def preprocess(data_path):
         processed_data = preprocess_data(raw_data)
         logger.info("Data preprocessing completed")
 
-        # Save processed data to S3
         processed_file_name = key.replace('raw', 'processed')
         processed_s3_key = f"processed/{processed_file_name}"
         csv_buffer = processed_data.to_csv(index=False)

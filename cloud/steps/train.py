@@ -1,6 +1,6 @@
 # steps/train.py
 from sagemaker.workflow.function_step import step
-from steps.utils import get_default_bucket, upload_to_s3, setup_logging
+from steps.utils import get_default_bucket, upload_to_s3, setup_logging, download_from_s3, LSTMTimeSeries
 import boto3
 import pandas as pd
 import numpy as np
@@ -13,33 +13,6 @@ from datetime import datetime
 import os
 import logging
 from sagemaker import Session
-
-
-def download_from_s3(s3_path):
-    """Download a file from S3 and return the local path."""
-    s3_client = boto3.client('s3')
-    bucket, key = s3_path.replace("s3://", "").split("/", 1)
-    local_file = f"/tmp/{os.path.basename(key)}"
-    s3_client.download_file(bucket, key, local_file)
-    return local_file
-
-
-class LSTMTimeSeries(nn.Module):
-    def __init__(self, input_size, hidden_size, num_layers=1, output_size=1):
-        super(LSTMTimeSeries, self).__init__()
-        self.hidden_size = hidden_size
-        self.num_layers = num_layers
-        self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
-        self.fc = nn.Linear(hidden_size, output_size)
-
-    
-    def forward(self, x):
-        h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(x.device)
-        c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(x.device)
-        out, _ = self.lstm(x, (h0, c0))
-        out = out[:, -1, :]
-        out = self.fc(out)
-        return out
 
 
 class SPYDataset(Dataset):
@@ -150,7 +123,7 @@ def train(data_s3_path):
         logger.info(f"Training completed with RMSE: {rmse}")
 
         # Save model to S3
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        timestamp = datetime.now().strftime("%Y%m%d_%H")
         model_filename = f"model_{timestamp}_rmse_{rmse:.4f}.safetensors"
         state_dict_cpu = {k: v.cpu() for k, v in model.state_dict().items()}
         save_file(state_dict_cpu, model_filename)
