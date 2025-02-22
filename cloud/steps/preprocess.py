@@ -17,24 +17,18 @@ def preprocess_data(raw_data):
     Returns:
         pd.DataFrame: Processed data with numeric features sorted by date.
     """
-    # Reset index and sort by 'Date'
     raw_data.reset_index(inplace=True)
     raw_data['Date'] = pd.to_datetime(raw_data['Date'], utc=True)
     raw_data = raw_data.sort_values('Date')
 
-    # Select only numeric features, as per notebook's download_data
     features = ['Open', 'High', 'Low', 'Close']
     processed_data = raw_data[features]
 
-    # Reset index to match notebook's final data format
     processed_data.reset_index(drop=True, inplace=True)
     return processed_data
 
 
-@step(
-    instance_type="ml.m5.large",
-    dependencies="requirements.txt"
-)
+@step(instance_type="ml.m5.large")
 def preprocess(data_path):
     logger = setup_logging()
     logger.info(f"Starting preprocessing with data from {data_path}")

@@ -8,10 +8,7 @@ import boto3
 from sagemaker import Session
 
 
-@step(
-    instance_type="ml.m5.large",
-    dependencies="requirements.txt"
-)
+@step(instance_type="ml.m5.large")
 def fetch(ticker, years):
     """
     Fetches historical stock data for the given ticker over the specified number of years,
