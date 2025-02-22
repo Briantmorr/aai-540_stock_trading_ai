@@ -4,3 +4,4 @@ torch
 safetensors
 numpy
 scikit-learn
+optuna

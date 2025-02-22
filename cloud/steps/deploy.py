@@ -10,10 +10,10 @@ import os
 import tarfile
 from datetime import datetime
 
-# @step(
-#     instance_type="ml.m5.large",
-#     dependencies="dependencies.txt"  
-# )
+@step(
+    instance_type="ml.m5.large",
+    dependencies="requirements.txt"
+)
 def deploy(eval_output):
     """
     Deploys the model to a SageMaker endpoint if deploy_flag is True, updates the current model in S3,

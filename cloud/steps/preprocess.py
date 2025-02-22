@@ -31,10 +31,10 @@ def preprocess_data(raw_data):
     return processed_data
 
 
-# @step(
-#     instance_type="ml.m5.large",
-#     dependencies="cloud/"
-# )
+@step(
+    instance_type="ml.m5.large",
+    dependencies="requirements.txt"
+)
 def preprocess(data_path):
     logger = setup_logging()
     logger.info(f"Starting preprocessing with data from {data_path}")

@@ -67,11 +67,11 @@ def evaluate_model(model, test_loader, device):
             actuals.append(y_batch.numpy().reshape(-1, 1))
     return np.vstack(predictions), np.vstack(actuals)
 
-    
-# @step(
-#     instance_type="ml.m5.large",
-#     dependencies="requirements.txt"
-# )
+
+@step(
+    instance_type="ml.m5.large",
+    dependencies="requirements.txt"
+)
 def train(data_s3_path):
     """
     Trains an LSTM model on preprocessed stock data, evaluates it, saves the model to S3,

@@ -29,10 +29,10 @@ def get_rmse_from_filename(s3_path):
         return None
 
 
-# @step(
-#     instance_type="ml.m5.large",
-#     dependencies="requirements.txt"
-# )
+@step(
+    instance_type="ml.m5.large",
+    dependencies="requirements.txt"
+)
 def eval(train_output):
     """
     Evaluates the trained model against the current deployed model by comparing RMSE.
