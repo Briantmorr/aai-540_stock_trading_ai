@@ -1,2 +1,7 @@
 yfinance
 pandas
+torch
+safetensors
+numpy
+scikit-learn
+optuna
