@@ -1,5 +1,6 @@
 # Stock Market Prediction with MLOps Pipeline
-
+## Architecture
+![pipeline architecture](data/pipeline_architecture.jpg)
 ## Project Overview
 This project focuses on predicting the stock prices of FAANG (Facebook, Amazon, Apple, Netflix, Google) companies using historical stock market data. The primary objective is to design and implement an MLOps pipeline that supports continuous learning, ensuring the model stays relevant and accurate in the face of ever-changing market conditions.
 
@@ -25,15 +26,8 @@ While the stock market's volatility makes prediction challenging, this project l
 ## Dataset
 We use the **FAANG-Complete Stock Data** dataset from Kaggle ([Dataset Link](https://www.kaggle.com/datasets/aayushmishra1512/faang-complete-stock-data)). This dataset includes:
 
-- **Features**: Date, Open, High, Low, Close, Adj Close, Volume
+- **Features**: Date, Open, High, Low, Close 
 - **Scope**: Historical stock data for FAANG companies.
-
-For this project, we will primarily focus on:
-- **Date**: As a time index for predictions.
-- **Open**: The stock's opening price.
-- **Volume**: The total volume of trades.
-
-Other features such as High, Low, and Adj Close are omitted in the initial implementation due to potential multicollinearity.
 
 ---
 

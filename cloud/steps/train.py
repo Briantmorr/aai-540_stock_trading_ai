@@ -11,7 +11,6 @@ from safetensors.torch import save_file
 from datetime import datetime
 import os
 import optuna
-import logging
 import sagemaker
 from sagemaker.pytorch import PyTorchModel
 from sagemaker.model_metrics import ModelMetrics, MetricsSource
