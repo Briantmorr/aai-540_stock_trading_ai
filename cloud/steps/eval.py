@@ -86,8 +86,9 @@ def eval(train_output):
             logger.info("No approved model found in registry.")
 
         # Decide whether to approve/deploy the new model
-        deploy_flag = new_rmse < current_rmse
-        logger.info(f"New RMSE: {new_rmse}, Current RMSE: {current_rmse}, Deploy: {deploy_flag}")
+        threshold = 2
+        deploy_flag = (new_rmse + threshold) < current_rmse
+        logger.info(f"New RMSE: {new_rmse}, Current RMSE: {current_rmse}, Threshold: {threshold}, Deploy: {deploy_flag}")
 
         return deploy_flag, model_package_arn
 
